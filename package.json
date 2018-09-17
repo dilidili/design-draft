@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "opencv4nodejs": "^4.7.5"
+  }
+}
