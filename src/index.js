@@ -1,6 +1,7 @@
 const cv = require("opencv4nodejs");
 const process = require("process");
 const path = require("path");
+const fs = require("fs");
 
 const minArea = 25;
 const RED = new cv.Vec(0, 0, 255);
@@ -13,27 +14,57 @@ const dilate = canny.dilate(
 );
 
 // You can try more different parameters
-const contours = dilate.findContours(cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
+let contours = dilate.findContours(cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
+contours = contours.filter(v => v.area >= minArea);
+
 for (let i = 0; i < contours.length; i++) {
   const contour = contours[i];
 
-  if (contour.area >= minArea) {
-    const rect = contour.boundingRect()
-    src.drawRectangle(rect, RED, 2)
-  //   const arcLength = contour.arcLength(true);
-  //   const aprox = contour.approxPolyDP(0.1, true);
+  const rect = contour.boundingRect();
+  src.drawRectangle(rect, RED, 2);
+}
 
-  //   switch (aprox.length) {
-  //     case 3:
-  //       src.drawContours([contour], GREEN, { thickness: 1 });
-  //       continue;
-  //     case 4:
-  //       src.drawContours([contour], RED, { thickness: 1 });
-  //       continue;
-  //     default:
-  //       src.drawContours([contour], BLUE, { thickness: 1 });
-  //   }
+// Output contours data to file as tree data
+contours = contours.map(v => v.boundingRect());
+function containRect(a, b) {
+  return a.x <= b.x && a.y <= b.y && (a.x + a.width) >= (b.x + b.width) && (a.y + a.height) >= (b.y + b.height)
+}
+
+function addChild(parent, rect) {
+  const containChild = parent.children.find(v => containRect(v.rect, rect))
+
+  if (containChild) {
+    addChild(containChild, rect)
+  } else {
+    const mergeChild = parent.children.filter(v => containRect(rect, v.rect))
+
+    if (mergeChild.length > 0) {
+      parent.children = parent.children.filter(v => !containRect(rect, v.rect))
+      parent.children.push({
+        rect,
+        children: mergeChild,
+      })
+    } else {
+      parent.children.push({
+        rect,
+        children: [],
+      })
+    }
   }
 }
+const root = {
+  rect: {
+    x: -Infinity,
+    y: -Infinity,
+    width: Infinity,
+    height: Infinity,
+  },
+  children: [],
+}
+contours.forEach(contour => {
+  addChild(root, contour)
+})
+
+fs.writeFileSync(path.join(process.cwd(), "./assets/boundingRect.json"), JSON.stringify(root, null, 2))
 
 cv.imwrite(path.join(process.cwd(), "./assets/case0_output.png"), src);
