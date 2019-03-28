@@ -3,7 +3,7 @@ const process = require("process");
 const path = require("path");
 const fs = require("fs");
 
-const minArea = 25;
+const minArea = 50;
 const RED = new cv.Vec(0, 0, 255);
 
 const src = cv.imread(path.join(process.cwd(), "./assets/case0.png"));
@@ -13,7 +13,7 @@ const dilate = canny.dilate(
   cv.getStructuringElement(cv.MORPH_ELLIPSE, new cv.Size(3, 3))
 );
 
-// You can try more different parameters
+// you can try more different parameters.
 let contours = dilate.findContours(cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
 contours = contours.filter(v => v.area >= minArea);
 
@@ -24,7 +24,7 @@ for (let i = 0; i < contours.length; i++) {
   src.drawRectangle(rect, RED, 2);
 }
 
-// Output contours data to file as tree data
+// output contours data to file as tree data.
 contours = contours.map(v => v.boundingRect());
 function containRect(a, b) {
   return a.x <= b.x && a.y <= b.y && (a.x + a.width) >= (b.x + b.width) && (a.y + a.height) >= (b.y + b.height)
