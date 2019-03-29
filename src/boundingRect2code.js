@@ -39,7 +39,20 @@ function computeSizeStyle(element) {
   element.style.height = element.rect.height;
 }
 
-function wrapWithStyle(element) {
+function filterNoisy(element) {
+  const {
+    rect: {
+      width,
+      height,
+    }
+  } = element;
+
+  let ret = true
+  ret = ret && Math.max(width, height) / Math.min(width, height) < 10  // 长宽比异常
+  return ret
+}
+
+function wrapWithStyle(element, depth = 0, maxDepth) {
   element.style = element.style || { backgroundColor: randomColor() };
 
   // necessary style.
@@ -49,7 +62,11 @@ function wrapWithStyle(element) {
   // size style.
   computeSizeStyle(element);
 
-  (element.children || []).forEach(wrapWithStyle);
+  if (!maxDepth || depth < maxDepth) {
+    (element.children || []).filter(filterNoisy).forEach((child) => wrapWithStyle(child, depth + 1, maxDepth));
+  } else {
+    element.children = []
+  }
 }
 
 function element2Code(element, indent) {
@@ -70,7 +87,7 @@ function element2Code(element, indent) {
   return ret;
 }
 
-wrapWithStyle(boundingRect);
+wrapWithStyle(boundingRect, 0, 2);
 
 // generate page file.
 const pageTpl = fs.readFileSync(path.join(__dirname, './template/page.js.tpl'), 'utf-8');
