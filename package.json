@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "opencv4nodejs": "^4.7.5"
+    "mustache": "^3.0.1",
+    "opencv4nodejs": "^4.7.5",
+    "randomcolor": "^0.5.4"
   }
 }
