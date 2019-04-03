@@ -10,7 +10,7 @@ const src = cv.imread(path.join(process.cwd(), "./assets/case0.png"));
 const gray = src.cvtColor(cv.COLOR_RGBA2GRAY);
 const canny = gray.canny(0, 30);
 const dilate = canny.dilate(
-  cv.getStructuringElement(cv.MORPH_ELLIPSE, new cv.Size(3, 3))
+  cv.getStructuringElement(cv.MORPH_ELLIPSE, new cv.Size(20, 20))
 );
 
 // you can try more different parameters.

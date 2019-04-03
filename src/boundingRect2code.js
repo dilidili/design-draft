@@ -24,6 +24,10 @@ function getCenterPoint(element) {
   return element._centerPoint;
 }
 
+function isAlmostSamePoint(a, b, outside) {
+  return (Math.abs(a[0] - b[0]) / outside.width) < 0.05 && (Math.abs(a[1] - b[1]) / outside.width) < 0.05;
+}
+
 function getFlexDirection(element) {
   const centerPointList = element.children.map(v => getCenterPoint(v))
 
@@ -35,6 +39,34 @@ function getFlexDirection(element) {
   }, 0);
 
   return diffHorizontal > diffVertical ? 'row' : 'column';
+}
+
+function getFlexAlignItems(element) {
+  const isRowDirection = element.style.flexDirection === 'row';
+
+  const parentCenter = getCenterPoint(element);
+  if (isRowDirection) {
+    const error = element.children.reduce((r, v) => r + Math.abs(getCenterPoint(v)[1] - parentCenter[1]), 0)
+    if (error / element.rect.height < 0.2) {
+      return 'center'
+    }
+  } else {
+    const error = element.children.reduce((r, v) => r + Math.abs(getCenterPoint(v)[0] - parentCenter[0]), 0)
+    if (error / element.rect.width < 0.2) {
+      return 'center'
+    }
+  }
+}
+
+function getFlexJustifyContent(element) {
+  const parentCenter = getCenterPoint(element);
+  if (element.children.length === 1) {
+    const childCenter = getCenterPoint(element.children[0]);
+
+    if (isAlmostSamePoint(parentCenter, childCenter, element.rect)) {
+      return 'center'
+    }
+  }
 }
 
 function computeSizeStyle(element) {
@@ -56,37 +88,19 @@ function createNodeWithChildren(children) {
   children.forEach(child => {
     ret.rect.x = Math.min(child.rect.x, ret.rect.x);
     ret.rect.y = Math.min(child.rect.y, ret.rect.y);
-    ret.rect.width = Math.max(child.rect.width, ret.rect.width);
-    ret.rect.height = Math.max(child.rect.height, ret.rect.height);
+    ret.rect.width = Math.max(child.rect.x + child.rect.width, ret.rect.width);
+    ret.rect.height = Math.max(child.rect.y + child.rect.height, ret.rect.height);
   });
 
-  return ret;
-}
-
-function filterNoisy(element, parentElement) {
-  const {
-    rect: {
-      width,
-      height,
-    }
-  } = element;
-  const {
-    rect: {
-      width: parentWidth,
-      height: parentHeight,
-    }
-  } = parentElement;
-
-  let ret = true
-  ret = ret && Math.max(width, height) / Math.min(width, height) < 10; // radio abnormality.
-  // ret = ret && ((width * height) / (parentWidth * parentHeight)) > 0.0006; // area abnormality.
+  ret.rect.width = ret.rect.width - ret.rect.x;
+  ret.rect.height = ret.rect.height - ret.rect.y;
   return ret;
 }
 
 const REORGNAIZE_ERROR = 5;
 function reorganizeChildren(element) {
   element.children = element.children || [];
-  const dirtyArray = element.children.slice(element.children);
+  const dirtyArray = element.children.slice();
 
   while(dirtyArray && dirtyArray.length) {
     const current = dirtyArray.shift();
@@ -97,7 +111,10 @@ function reorganizeChildren(element) {
       newNode = createNodeWithChildren([current, ...verticalSiblings]);
     } else {
       const horizontalSiblings = element.children.filter(child => child !== current && Math.abs(getCenterPoint(current)[1] - getCenterPoint(child)[1]) < REORGNAIZE_ERROR);
-      newNode = createNodeWithChildren([current, ...horizontalSiblings]);
+
+      if (horizontalSiblings && horizontalSiblings.length > 0) {
+        newNode = createNodeWithChildren([current, ...horizontalSiblings]);
+      }
     }
 
     if (newNode) {
@@ -116,12 +133,14 @@ function wrapWithStyle(element, depth = 0, maxDepth) {
   // necessary style.
   element.style.display = 'flex';
   element.style.flexDirection = getFlexDirection(element);
+  element.style.alignItems = getFlexAlignItems(element);
+  element.style.justifyContent = getFlexJustifyContent(element);
 
   // size style.
   computeSizeStyle(element);
 
   if (!maxDepth || depth < maxDepth) {
-    element.children = (element.children || []).filter(child => filterNoisy(child, element))
+    element.children = (element.children || [])
     element.children.forEach((child) => wrapWithStyle(child, depth + 1, maxDepth));
   } else {
     element.children = []
