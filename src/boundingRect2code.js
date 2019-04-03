@@ -28,6 +28,7 @@ function isAlmostSamePoint(a, b, outside) {
   return (Math.abs(a[0] - b[0]) / outside.width) < 0.05 && (Math.abs(a[1] - b[1]) / outside.width) < 0.05;
 }
 
+// return flex direction and resort element.
 function getFlexDirection(element) {
   const centerPointList = element.children.map(v => getCenterPoint(v))
 
@@ -38,24 +39,44 @@ function getFlexDirection(element) {
     return r + (t[k + 1] ? t[k + 1] - v : 0);
   }, 0);
 
-  return diffHorizontal > diffVertical ? 'row' : 'column';
+  if (diffHorizontal > diffVertical) {
+    element.children.sort((a, b) => a.rect.x - b.rect.x);
+    return 'row';
+  } else {
+    element.children.sort((a, b) => a.rect.y - b.rect.y);
+    return 'column';
+  }
 }
 
 function getFlexAlignItems(element) {
   const isRowDirection = element.style.flexDirection === 'row';
 
   const parentCenter = getCenterPoint(element);
+  const retBucket = [0, 0, 0]; // flex-start | center | flex-end
+
   if (isRowDirection) {
-    const error = element.children.reduce((r, v) => r + Math.abs(getCenterPoint(v)[1] - parentCenter[1]), 0)
-    if (error / element.rect.height < 0.2) {
-      return 'center'
-    }
+    element.children.forEach(child => {
+      if (Math.abs(child.rect.y - element.rect.y) / element.rect.height < 0.1) {
+        retBucket[0] += 1;
+      } else if (Math.abs(child.rect.y + child.rect.height - element.rect.y - element.rect.height) / element.rect.height < 0.1) {
+        retBucket[2] += 1;
+      } else {
+        retBucket[1] += 1;
+      }
+    })
   } else {
-    const error = element.children.reduce((r, v) => r + Math.abs(getCenterPoint(v)[0] - parentCenter[0]), 0)
-    if (error / element.rect.width < 0.2) {
-      return 'center'
-    }
+    element.children.forEach(child => {
+      if (Math.abs(child.rect.x - element.rect.x) / element.rect.width < 0.1) {
+        retBucket[0] += 1;
+      } else if (Math.abs(child.rect.x + child.rect.width - element.rect.x - element.rect.width) / element.rect.width < 0.1) {
+        retBucket[2] += 1;
+      } else {
+        retBucket[1] += 1;
+      }
+    })
   }
+
+  return ['flex-start', 'center', 'flex-end'][retBucket.indexOf(Math.max(...retBucket))];
 }
 
 function getFlexJustifyContent(element) {
