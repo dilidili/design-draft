@@ -56,22 +56,26 @@ function getFlexAlignItems(element) {
 
   if (isRowDirection) {
     element.children.forEach(child => {
-      if (Math.abs(child.rect.y - element.rect.y) / element.rect.height < FLEX_ALIGN_ITEM_THRES) {
+      if (Math.abs((child.rect.y - element.rect.y) - (element.rect.y + element.rect.height - child.rect.y - child.rect.height)) / element.rect.height < FLEX_ALIGN_ITEM_THRES) {
+        retBucket[1] += 1;
+      } else if (Math.abs(child.rect.y - element.rect.y) / element.rect.height < FLEX_ALIGN_ITEM_THRES) {
         retBucket[0] += 1;
       } else if (Math.abs(child.rect.y + child.rect.height - element.rect.y - element.rect.height) / element.rect.height < FLEX_ALIGN_ITEM_THRES) {
         retBucket[2] += 1;
       } else {
-        retBucket[1] += 1;
+        retBucket[0] += 1;
       }
     })
   } else {
     element.children.forEach(child => {
-      if (Math.abs(child.rect.x - element.rect.x) / element.rect.width < FLEX_ALIGN_ITEM_THRES) {
+      if (Math.abs((child.rect.x - element.rect.x) - (element.rect.x + element.rect.width - child.rect.x - child.rect.width)) / element.rect.width < FLEX_ALIGN_ITEM_THRES) {
+        retBucket[1] += 1;
+      } else if (Math.abs(child.rect.x - element.rect.x) / element.rect.width < FLEX_ALIGN_ITEM_THRES) {
         retBucket[0] += 1;
       } else if (Math.abs(child.rect.x + child.rect.width - element.rect.x - element.rect.width) / element.rect.width < FLEX_ALIGN_ITEM_THRES) {
         retBucket[2] += 1;
       } else {
-        retBucket[1] += 1;
+        retBucket[0] += 1;
       }
     })
   }
