@@ -51,7 +51,6 @@ function getFlexDirection(element) {
 function getFlexAlignItems(element) {
   const isRowDirection = element.style.flexDirection === 'row';
 
-  const parentCenter = getCenterPoint(element);
   const retBucket = [0, 0, 0]; // flex-start | center | flex-end
 
   if (isRowDirection) {
@@ -88,6 +87,41 @@ function getFlexJustifyContent(element) {
       return 'center'
     }
   }
+}
+
+function getMargin(element) {
+  const parentElement = element._parent;
+  if (!parentElement) return null
+
+  const {
+    style: {
+      flexDirection,
+      alignItems,
+      justifyContent,
+    }
+  } = parentElement;
+
+  const margins = [0, 0, 0, 0];
+
+
+  if (flexDirection === 'column') {
+    if (alignItems === 'center' && (!justifyContent || justifyContent === 'flex-start')) {
+      if (parentElement.children[0] === element) {
+        margins[0] = element.rect.y - parentElement.rect.y;
+      } else {
+        const siblingElement = parentElement.children[parentElement.children.indexOf(element) - 1];
+        margins[0] = element.rect.y - siblingElement.rect.y - siblingElement.rect.height;
+      }
+
+      const xOffset = getCenterPoint(element)[0] - getCenterPoint(parentElement)[0];
+      if (Math.abs(xOffset) / element.rect.width > 0.1) {
+        element.style.alignSelf = 'flex-start';
+        margins[3] = Math.abs(element.rect.x - parentElement.rect.x);
+      }
+    }
+  }
+
+  return margins.map(v => v + 'px').join(' ');
 }
 
 function computeSizeStyle(element) {
@@ -156,13 +190,17 @@ function wrapWithStyle(element, depth = 0, maxDepth) {
   element.style.flexDirection = getFlexDirection(element);
   element.style.alignItems = getFlexAlignItems(element);
   element.style.justifyContent = getFlexJustifyContent(element);
+  element.style.margin = getMargin(element);
 
   // size style.
   computeSizeStyle(element);
 
   if (!maxDepth || depth < maxDepth) {
     element.children = (element.children || [])
-    element.children.forEach((child) => wrapWithStyle(child, depth + 1, maxDepth));
+    element.children.forEach((child) => {
+      child._parent = element;
+      wrapWithStyle(child, depth + 1, maxDepth);
+    });
   } else {
     element.children = []
   }
