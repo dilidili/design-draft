@@ -154,13 +154,14 @@ function createNodeWithChildren(children) {
 
   ret.rect.width = ret.rect.width - ret.rect.x;
   ret.rect.height = ret.rect.height - ret.rect.y;
+
   return ret;
 }
 
 const REORGNAIZE_ERROR = 5;
 function reorganizeChildren(element) {
   element.children = element.children || [];
-  const dirtyArray = element.children.slice();
+  let dirtyArray = element.children.slice();
 
   while(dirtyArray && dirtyArray.length) {
     const current = dirtyArray.shift();
@@ -179,16 +180,17 @@ function reorganizeChildren(element) {
 
     if (newNode && newNode.children.length < element.children.length) {
       element.children = element.children.filter(v => !newNode.children.find(w => w === v));
+      dirtyArray = dirtyArray.filter(v => !newNode.children.find(w => w === v));
       element.children.push(newNode);
     }
   }
 }
 
 function wrapWithStyle(element, depth = 1, maxDepth) {
+  element.style = element.style || { backgroundColor: randomColor() };
+
   // reorganize children.
   reorganizeChildren(element);
-
-  element.style = element.style || { backgroundColor: randomColor() };
 
   // necessary style.
   element.style.display = 'flex';
@@ -229,7 +231,7 @@ function element2Code(element, indent) {
   return ret;
 }
 
-wrapWithStyle(boundingRect, 0, 2);
+wrapWithStyle(boundingRect, 0, 3);
 
 // generate page file.
 const pageTpl = fs.readFileSync(path.join(__dirname, './template/page.js.tpl'), 'utf-8');
