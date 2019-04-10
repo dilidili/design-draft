@@ -1,12 +1,15 @@
 const Mustache = require('mustache');
 const fs = require('fs');
 const path = require('path');
-const randomColor = require('randomcolor');
+const cv = require("opencv4nodejs");
+const BackgroundColorDetector = require('./backgroundColorDetector');
 
 let boundingRect = require('../assets/boundingRect');
-
 // find root parent.
 boundingRect = boundingRect.children.find(v => v.children && v.children.length > 0);
+
+const srcImage = cv.imread(path.join(process.cwd(), "./assets/case0.png"));
+let cropIndex = 0;
 
 function getCenterPoint(element) {
   if (element._centerPoint) return element._centerPoint;
@@ -195,7 +198,7 @@ function reorganizeChildren(element) {
 }
 
 function wrapWithStyle(element, depth = 1, maxDepth) {
-  element.style = element.style || { backgroundColor: randomColor() };
+  element.style = element.style || {};
 
   // reorganize children.
   reorganizeChildren(element);
@@ -219,6 +222,13 @@ function wrapWithStyle(element, depth = 1, maxDepth) {
   } else {
     element.children = []
   }
+
+  // crop corresponding area image.
+  const cropImage = srcImage.getRegion(new cv.Rect(element.rect.x, element.rect.y, element.rect.width, element.rect.height));
+  const cropId = `crop_image_${cropIndex++}.png`;
+  const backgroundColor = new BackgroundColorDetector(cropImage).detect();
+  element.style.background = `rgb(${backgroundColor[2]}, ${backgroundColor[1]}, ${backgroundColor[0]})`;
+  cv.imwrite(path.join(__dirname, `../playground/public/${cropId}.png`), cropImage);
 }
 
 function element2Code(element, indent) {
