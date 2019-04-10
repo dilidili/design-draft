@@ -108,7 +108,6 @@ function getMargin(element) {
 
   const margins = [0, 0, 0, 0];
 
-
   if (flexDirection === 'column') {
     if (alignItems === 'center' && (!justifyContent || justifyContent === 'flex-start')) {
       if (parentElement.children[0] === element) {
@@ -122,6 +121,15 @@ function getMargin(element) {
       if (Math.abs(xOffset) / element.rect.width > 0.1) {
         element.style.alignSelf = 'flex-start';
         margins[3] = Math.abs(element.rect.x - parentElement.rect.x);
+      }
+    }
+  } else if (flexDirection === 'row') {
+    if (!justifyContent || justifyContent === 'flex-start') {
+      const previousElement = parentElement.children[parentElement.children.indexOf(element) - 1];
+
+      // margin left.
+      if (previousElement) {
+        margins[3] = element.rect.x - previousElement.rect.x - previousElement.rect.width;
       }
     }
   }
@@ -231,7 +239,7 @@ function element2Code(element, indent) {
   return ret;
 }
 
-wrapWithStyle(boundingRect, 0, 3);
+wrapWithStyle(boundingRect, 0, 4);
 
 // generate page file.
 const pageTpl = fs.readFileSync(path.join(__dirname, './template/page.js.tpl'), 'utf-8');
