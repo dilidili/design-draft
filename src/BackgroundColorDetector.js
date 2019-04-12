@@ -29,7 +29,7 @@ class BackgroundColorDetector {
       r[2] += bgr[2];
 
       return r;
-    }, [0, 0, 0]).map(v => v => ~~(v / sample));
+    }, [0, 0, 0]).map(v => ~~(v / 5));
   }
 
   twentyMostCommon() {

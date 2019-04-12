@@ -1,0 +1,6 @@
+db/
+output/
+input/
+.env/
+*.npy
+*.pyc

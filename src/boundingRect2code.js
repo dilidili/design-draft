@@ -225,10 +225,10 @@ function wrapWithStyle(element, depth = 1, maxDepth) {
 
   // crop corresponding area image.
   const cropImage = srcImage.getRegion(new cv.Rect(element.rect.x, element.rect.y, element.rect.width, element.rect.height));
-  const cropId = `crop_image_${cropIndex++}.png`;
+  const cropId = `crop_image_${cropIndex++}.jpeg`;
   const backgroundColor = new BackgroundColorDetector(cropImage).detect();
   element.style.background = `rgb(${backgroundColor[2]}, ${backgroundColor[1]}, ${backgroundColor[0]})`;
-  cv.imwrite(path.join(__dirname, `../playground/public/${cropId}.png`), cropImage);
+  cv.imwrite(path.join(__dirname, `../similar_components_TL/input/${cropId}`), cropImage);
 }
 
 function element2Code(element, indent) {
