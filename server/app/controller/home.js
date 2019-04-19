@@ -12,7 +12,6 @@ class HomeController extends Controller {
 
     const url = 'https://h5.ele.me' + ctx.path.replace(/^\/api/, '') + '?' + ctx.querystring;
 
-    console.log(url);
     const res = await this.ctx.curl(url, {
       method: this.ctx.method,
     });

@@ -5,6 +5,6 @@
  */
 module.exports = app => {
   const { router, controller } = app;
-  router.all('/restapi/*', controller.home.api);
+  router.resources('projects', '/api/projects', controller.projects);
   router.get('*', controller.home.index);
 };
