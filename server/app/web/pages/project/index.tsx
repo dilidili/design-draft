@@ -1,12 +1,14 @@
 import React from 'react';
-import { Button, Modal, Form, Input } from 'antd';
+import { Button, Modal, Form, Input, List } from 'antd';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { connect } from 'dva';
+import { Project as ProjectType } from 'models/project';
 
 interface ProjectProps {
   form: WrappedFormUtils,
   dispatch: any,
   createProjectLoading: boolean,
+  projectList: Array<ProjectType>,
 }
 
 @connect(({ project, loading }) => ({
@@ -16,6 +18,14 @@ interface ProjectProps {
 class Project extends React.Component<ProjectProps> {
   state = {
     showCreateProjectModal: false,
+  }
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: 'project/fetchProjectList',
+    })
   }
 
   handleSubmit = () => {
@@ -61,6 +71,24 @@ class Project extends React.Component<ProjectProps> {
     )
   }
 
+  renderProjectList() {
+    const { projectList } = this.props;
+
+    return (
+      <List
+        itemLayout="horizontal"
+        dataSource={projectList}
+        renderItem={item => (
+          <List.Item>
+            <List.Item.Meta
+              title={<div>{item.projectTitle}</div>}
+            />
+          </List.Item>
+        )}
+      />
+    )
+  }
+
   render() {
     const {
       showCreateProjectModal,
@@ -83,6 +111,8 @@ class Project extends React.Component<ProjectProps> {
         >
           {this.renderCreateProjectForm()}
         </Modal>
+
+        {this.renderProjectList()}
       </div>
     )
   }

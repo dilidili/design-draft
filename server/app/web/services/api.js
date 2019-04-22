@@ -1,14 +1,14 @@
 import request from '@/utils/request';
 
-export async function queryProject() {
-  return request('/api/project/');
+export async function queryProjectList() {
+  return request('/api/projects/');
 }
 
-export async function addProject({ name }) {
+export async function addProject({ projectTitle }) {
   return request('/api/projects', {
     method: 'POST',
     data: {
-      name,
+      projectTitle,
     }
   });
 }

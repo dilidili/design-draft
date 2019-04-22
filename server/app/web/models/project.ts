@@ -1,7 +1,8 @@
-import { queryProject, addProject } from '@/services/api';
+import { queryProjectList, addProject } from '@/services/api';
 
-interface Project {
-  name: string,
+export interface Project {
+  projectTitle: string,
+  _id: string,
 }
 
 export default {
@@ -13,16 +14,16 @@ export default {
 
   effects: {
     *fetchProjectList(_, { call, put }) {
-      const res = yield call(queryProject);
+      const res = yield call(queryProjectList);
 
       yield put({
         type: 'updateList',
-        payload: Array.isArray(res.data) ? res.data : [],
+        payload: Array.isArray(res) ? res : [],
       })
     },
 
     *createProject({ payload: { projectName } }, { call, put }) {
-      const res = yield call(addProject, { name: projectName });
+      const res = yield call(addProject, { projectTitle: projectName });
 
       yield put({
         type: 'addProject',
@@ -38,6 +39,13 @@ export default {
       return {
         ...state,
         list: action.payload,
+      }
+    },
+
+    addProject(state, action) {
+      return {
+        ...state,
+        list: [...state.list, action.payload],
       }
     }
   },
