@@ -1,12 +1,16 @@
 const Service = require('egg').Service;
 
 class ProjectService extends Service {
-  async query() {
+  async query({ projectId } = {}) {
     const { model } = this.ctx;
 
-    const projects = model.Project.find({}).sort('-updatedAt');
-
-    return projects;
+    if (projectId) {
+      const project = await model.Project.findById(projectId);
+      return project;
+    } else {
+      const projects = model.Project.find().sort('-updatedAt');
+      return projects;
+    }
   }
 
   async create(params) {

@@ -3,7 +3,8 @@
 const { app, mock, assert } = require('egg-mock/bootstrap');
 
 describe('test/app/controller/project.test.js', () => {
-  it('should create project then delete it', function() {
+  it('should create project, fetch detail, then delete it', function() {
+    // create
     return app.httpRequest()
       .post('/api/projects')
       .send({ projectTitle: 'TEST_PROJECT' })
@@ -12,9 +13,18 @@ describe('test/app/controller/project.test.js', () => {
         assert(!!response.body._id, true)
         assert(!!response.body.createdAt, true)
 
+        // get
         app.httpRequest()
-          .delete(`/api/projects/${response.body._id}`)
-          .expect(204)
+          .get(`/api/projects/${response.body._id}`)
+          .expect(200)
+          .then(detailResponse => {
+            assert(detailResponse.body._id === response.body._id)
+
+            // delete
+            app.httpRequest()
+              .delete(`/api/projects/${response.body._id}`)
+              .expect(204)
+          })
       });
   });
 

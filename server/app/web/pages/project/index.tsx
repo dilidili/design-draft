@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Modal, Form, Input, List, Popconfirm, Icon  } from 'antd';
+import router from 'umi/router';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { connect } from 'dva';
 import { Project as ProjectType } from 'models/project';
@@ -99,7 +100,7 @@ class Project extends React.Component<ProjectProps> {
             )]}
           >
             <List.Item.Meta
-              title={<div>{item.projectTitle}</div>}
+              title={<div style={{ cursor: 'pointer' }} onClick={() => router.push(`/project/${item._id}`)}>{item.projectTitle}</div>}
               description={dayjs(item.createdAt).format('YYYY-MM-DD hh:mm:ss')}
             />
           </List.Item>

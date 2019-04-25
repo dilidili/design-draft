@@ -16,6 +16,16 @@ class ProjectController extends Controller {
     ctx.status = 200;
   }
 
+  async show() {
+    const ctx = this.ctx;
+    const projectId = ctx.params.id;
+
+    const project = await ctx.service.projects.query({ projectId });
+
+    ctx.body = project;
+    ctx.status = project ? 200 : 204;
+  }
+
   async create() {
     const ctx = this.ctx;
     ctx.validate(createRule, ctx.request.body);

@@ -1,9 +1,10 @@
-import { queryProjectList, addProject, deleteProject } from '@/services/api';
+import { queryProjectList, addProject, deleteProject, queryProjectDetail } from '@/services/api';
 import project from 'pages/project';
 
 export interface Project {
   projectTitle: string,
   createdAt: string,
+  updatedAt: string,
   _id: string,
 }
 
@@ -12,6 +13,7 @@ export default {
 
   state: {
     list: [] as Array<Project>,
+    current: null as Project,
   },
 
   effects: {
@@ -21,6 +23,15 @@ export default {
       yield put({
         type: 'updateList',
         payload: Array.isArray(res) ? res : [],
+      })
+    },
+
+    *enterProject({ payload: { projectId } }, { call, put }) {
+      const res = yield call(queryProjectDetail, { projectId });
+
+      yield put({
+        type: 'updateProjectDetail',
+        payload: res,
       })
     },
 
@@ -57,6 +68,13 @@ export default {
       return {
         ...state,
         list: [action.payload, ...state.list],
+      }
+    },
+
+    updateProjectDetail(state, action) {
+      return {
+        ...state,
+        current: action.payload,
       }
     },
 

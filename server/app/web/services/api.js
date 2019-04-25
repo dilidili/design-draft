@@ -18,3 +18,9 @@ export async function deleteProject({ projectId }) {
     method: 'DELETE',
   });
 }
+
+export async function queryProjectDetail({ projectId }) {
+  return request(`/api/projects/${projectId}`, {
+    method: 'GET',
+  });
+}
