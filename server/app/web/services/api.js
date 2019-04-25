@@ -12,3 +12,9 @@ export async function addProject({ projectTitle }) {
     }
   });
 }
+
+export async function deleteProject({ projectId }) {
+  return request(`/api/projects/${projectId}`, {
+    method: 'DELETE',
+  });
+}

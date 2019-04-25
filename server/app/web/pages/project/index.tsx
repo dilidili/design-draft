@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Modal, Form, Input, List } from 'antd';
+import { Button, Modal, Form, Input, List, Popconfirm, Icon  } from 'antd';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { connect } from 'dva';
 import { Project as ProjectType } from 'models/project';
@@ -47,6 +47,17 @@ class Project extends React.Component<ProjectProps> {
     })
   }
 
+  handleDeleteProject = (projectId: string) => {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: 'project/deleteProject',
+      payload: {
+        projectId,
+      }
+    })
+  }
+
   renderCreateProjectForm() {
     const {
       form: {
@@ -80,7 +91,13 @@ class Project extends React.Component<ProjectProps> {
         itemLayout="horizontal"
         dataSource={projectList}
         renderItem={item => (
-          <List.Item>
+          <List.Item
+            actions={[(
+              <Popconfirm title="Are you sure？" icon={<Icon type="question-circle-o" style={{ color: 'red' }}/>} onConfirm={() => this.handleDeleteProject(item._id)}>
+                <Button type="danger">Delete</Button>
+              </Popconfirm>
+            )]}
+          >
             <List.Item.Meta
               title={<div>{item.projectTitle}</div>}
               description={dayjs(item.createdAt).format('YYYY-MM-DD hh:mm:ss')}

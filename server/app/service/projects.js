@@ -17,7 +17,11 @@ class ProjectService extends Service {
     return project;
   }
 
+  async delete(projectId) {
+    const { model } = this.ctx;
 
+    return await model.Project.deleteOne({ _id: projectId });
+  }
 }
 
 module.exports = ProjectService;

@@ -25,6 +25,16 @@ class ProjectController extends Controller {
     ctx.body = newProject;
     ctx.status = 201;
   }
+
+  async destroy() {
+    const ctx = this.ctx;
+
+    const projectId = ctx.params.id;
+    if (projectId) {
+      await ctx.service.projects.delete(projectId);
+    }
+    ctx.status = 204;
+  }
 }
 
 module.exports = ProjectController;

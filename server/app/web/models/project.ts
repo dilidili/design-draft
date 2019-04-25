@@ -1,4 +1,5 @@
-import { queryProjectList, addProject } from '@/services/api';
+import { queryProjectList, addProject, deleteProject } from '@/services/api';
+import project from 'pages/project';
 
 export interface Project {
   projectTitle: string,
@@ -32,6 +33,15 @@ export default {
       });
 
       return res;
+    },
+
+    *deleteProject({ payload: { projectId } }, { call, put }) {
+      yield call(deleteProject, { projectId, })
+
+      yield put({
+        type: 'removeProject',
+        payload: projectId,
+      })
     }
   },
 
@@ -47,6 +57,13 @@ export default {
       return {
         ...state,
         list: [action.payload, ...state.list],
+      }
+    },
+
+    removeProject(state, action) {
+      return {
+        ...state,
+        list: state.list.filter(project => project._id !== action.payload),
       }
     }
   },
