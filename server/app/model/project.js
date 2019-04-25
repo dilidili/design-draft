@@ -3,7 +3,9 @@ module.exports = app => {
   const Schema = mongoose.Schema;
 
   const ProjectSchema = new Schema({
-    projectTitle: { type: String  },
+    projectTitle: { type: String },
+  }, {
+    timestamps: true,
   });
 
   return mongoose.model('Project', ProjectSchema);

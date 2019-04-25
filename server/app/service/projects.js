@@ -4,7 +4,7 @@ class ProjectService extends Service {
   async query() {
     const { model } = this.ctx;
 
-    const projects = model.Project.find({}) || [];
+    const projects = model.Project.find({}).sort('-updatedAt');
 
     return projects;
   }

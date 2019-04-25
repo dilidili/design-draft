@@ -10,6 +10,7 @@ describe('test/app/controller/project.test.js', () => {
       .expect(201)
       .then(response => {
         assert(!!response.body._id, true)
+        assert(!!response.body.createdAt, true)
       });
   });
 

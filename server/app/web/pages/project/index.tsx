@@ -3,6 +3,7 @@ import { Button, Modal, Form, Input, List } from 'antd';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { connect } from 'dva';
 import { Project as ProjectType } from 'models/project';
+import dayjs from 'dayjs';
 
 interface ProjectProps {
   form: WrappedFormUtils,
@@ -82,6 +83,7 @@ class Project extends React.Component<ProjectProps> {
           <List.Item>
             <List.Item.Meta
               title={<div>{item.projectTitle}</div>}
+              description={dayjs(item.createdAt).format('YYYY-MM-DD hh:mm:ss')}
             />
           </List.Item>
         )}

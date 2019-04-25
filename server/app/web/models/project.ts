@@ -2,6 +2,7 @@ import { queryProjectList, addProject } from '@/services/api';
 
 export interface Project {
   projectTitle: string,
+  createdAt: string,
   _id: string,
 }
 
@@ -45,7 +46,7 @@ export default {
     addProject(state, action) {
       return {
         ...state,
-        list: [...state.list, action.payload],
+        list: [action.payload, ...state.list],
       }
     }
   },
