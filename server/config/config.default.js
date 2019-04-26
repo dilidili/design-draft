@@ -15,6 +15,8 @@ module.exports = appInfo => {
     },
   };
 
+  config.oss = require('./oss.keys.json');
+
   config.mongoose = {
     client: {
       url: 'mongodb://127.0.0.1/design',

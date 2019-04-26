@@ -1,8 +1,11 @@
 import React from 'react';
 import { connect } from 'dva';
+import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { Project } from 'models/project';
+import { Button, Modal, Form, Input, Upload, Icon } from 'antd';
 
 interface ProjectDetailProps {
+  form: WrappedFormUtils,
   dispatch: any,
   match: any,
   projectDetail?: Project;
@@ -14,6 +17,10 @@ interface ProjectDetailProps {
   }
 })
 class ProjectDetail extends React.Component<ProjectDetailProps> {
+  state = {
+    showCreateDraftModal: false,
+  }
+
   componentDidMount() {
     const { dispatch, match } = this.props;
 
@@ -25,6 +32,44 @@ class ProjectDetail extends React.Component<ProjectDetailProps> {
     });
   }
 
+  normFile(e) {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  }
+
+  renderCreateDraftModal() {
+    const { showCreateDraftModal } = this.state;
+    const {
+      form: {
+        getFieldDecorator,
+      }
+    } = this.props;
+
+    return (
+      <Modal
+        visible={showCreateDraftModal}
+        title="Create draft"
+      >
+        <Form>
+          <Form.Item>
+            {getFieldDecorator('draftImage', {
+              valuePropName: 'file',
+              getValueFromEvent: this.normFile,
+            })(
+              <Upload name="draft" action="/api/oss/objects" listType="picture">
+                <Button>
+                  <Icon type="upload" /> Click to upload
+                </Button>
+              </Upload>
+            )}
+          </Form.Item>
+        </Form>
+      </Modal>
+    )
+  }
+
   render() {
     const { projectDetail } = this.props;
     if (!projectDetail) return null;
@@ -32,8 +77,12 @@ class ProjectDetail extends React.Component<ProjectDetailProps> {
     return <div>
       <h1>{projectDetail.projectTitle}</h1>
       <p>Last updated at {projectDetail.updatedAt}</p>
+
+      <Button onClick={() => this.setState({ showCreateDraftModal: true })}>Create Draft</Button>
+
+      {this.renderCreateDraftModal()}
     </div>;
   }
 }
 
-export default ProjectDetail;
+export default Form.create({ name: 'project_detail' })(ProjectDetail);
