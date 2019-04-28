@@ -2,12 +2,16 @@
 
 const { app, mock, assert } = require('egg-mock/bootstrap');
 
+const createProject = (params) => {
+  return app.httpRequest()
+    .post('/api/projects')
+    .send(params)
+}
+
 describe('test/app/controller/project.test.js', () => {
   it('should create project, fetch detail, then delete it', function() {
     // create
-    return app.httpRequest()
-      .post('/api/projects')
-      .send({ projectTitle: 'TEST_PROJECT' })
+    return createProject({ projectTitle: 'TEST_PROJECT' })
       .expect(201)
       .then(response => {
         assert(!!response.body._id, true)
@@ -37,3 +41,7 @@ describe('test/app/controller/project.test.js', () => {
       });
   });
 });
+
+module.exports = {
+  createProject,
+}

@@ -4,6 +4,7 @@ module.exports = app => {
 
   const ProjectSchema = new Schema({
     projectTitle: { type: String },
+    drafts: [{ type: Schema.Types.ObjectId, ref: 'Draft' }],
   }, {
     timestamps: true,
   });

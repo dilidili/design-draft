@@ -24,3 +24,13 @@ export async function queryProjectDetail({ projectId }) {
     method: 'GET',
   });
 }
+
+export async function addDraft({ projectId, urls }) {
+  return request('/api/drafts', {
+    method: 'POST',
+    data: {
+      projectId,
+      urls,
+    }
+  });
+}

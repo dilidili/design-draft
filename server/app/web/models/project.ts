@@ -1,11 +1,12 @@
 import { queryProjectList, addProject, deleteProject, queryProjectDetail } from '@/services/api';
-import project from 'pages/project';
+import { Draft } from './draft';
 
 export interface Project {
   projectTitle: string,
   createdAt: string,
   updatedAt: string,
   _id: string,
+  drafts: Array<Draft>,
 }
 
 export default {
@@ -83,6 +84,16 @@ export default {
         ...state,
         list: state.list.filter(project => project._id !== action.payload),
       }
-    }
+    },
+
+    addDraft(state, action) {
+      return {
+        ...state,
+        current: {
+          ...state.current,
+          drafts: [...state.current.drafts, ...action.payload],
+        },
+      }
+    },
   },
 }

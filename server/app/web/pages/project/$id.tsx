@@ -39,6 +39,26 @@ class ProjectDetail extends React.Component<ProjectDetailProps> {
     return e && e.fileList;
   }
 
+  handleCreateDraft = () => {
+    const { form, dispatch, projectDetail } = this.props;
+
+    form.validateFields((errs, values) => {
+      if (!errs && projectDetail) {
+        dispatch({
+          type: 'draft/createDraft',
+          payload: {
+            urls: values.draftImage.map(v => v.response.url),
+            projectId: projectDetail._id,
+          },
+        });
+
+        this.setState({
+          showCreateDraftModal: false,
+        });
+      }
+    })
+  }
+
   renderCreateDraftModal() {
     const { showCreateDraftModal } = this.state;
     const {
@@ -50,6 +70,7 @@ class ProjectDetail extends React.Component<ProjectDetailProps> {
     return (
       <Modal
         visible={showCreateDraftModal}
+        onOk={this.handleCreateDraft}
         title="Create draft"
       >
         <Form>
