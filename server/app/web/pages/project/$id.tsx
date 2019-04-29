@@ -1,8 +1,10 @@
 import React from 'react';
 import { connect } from 'dva';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
+import router from 'umi/router';
 import { Project } from 'models/project';
-import { Button, Modal, Form, Input, Upload, Icon } from 'antd';
+import { Button, Modal, Form, List, Upload, Icon, Avatar, Popconfirm } from 'antd';
+import dayjs from 'dayjs';
 
 interface ProjectDetailProps {
   form: WrappedFormUtils,
@@ -59,6 +61,17 @@ class ProjectDetail extends React.Component<ProjectDetailProps> {
     })
   }
 
+  handleDeleteDraft = (draftId: string) => {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: 'draft/deleteDraft',
+      payload: {
+        draftId,
+      }
+    })
+  }
+
   renderCreateDraftModal() {
     const { showCreateDraftModal } = this.state;
     const {
@@ -91,6 +104,32 @@ class ProjectDetail extends React.Component<ProjectDetailProps> {
     )
   }
 
+  renderDraftList() {
+    const { projectDetail } = this.props;
+
+    return (
+      <List
+        itemLayout="horizontal"
+        dataSource={projectDetail.drafts}
+        renderItem={item => (
+          <List.Item
+            actions={[(
+              <Popconfirm title="Are you sure？" icon={<Icon type="question-circle-o" style={{ color: 'red' }}/>} onConfirm={() => this.handleDeleteDraft(item._id)}>
+                <Button type="danger">Delete</Button>
+              </Popconfirm>
+            )]}
+          >
+            <List.Item.Meta
+              title={<div style={{ cursor: 'pointer' }} onClick={() => router.push(`/draft/${item._id}`)}>{item.draftName}</div>}
+              avatar={<Avatar src={item.url} />}
+              description={dayjs(item.updatedAt).format('YYYY-MM-DD hh:mm:ss')}
+            />
+          </List.Item>
+        )}
+      />
+    )
+  }
+
   render() {
     const { projectDetail } = this.props;
     if (!projectDetail) return null;
@@ -100,6 +139,8 @@ class ProjectDetail extends React.Component<ProjectDetailProps> {
       <p>Last updated at {projectDetail.updatedAt}</p>
 
       <Button onClick={() => this.setState({ showCreateDraftModal: true })}>Create Draft</Button>
+
+      {this.renderDraftList()}
 
       {this.renderCreateDraftModal()}
     </div>;

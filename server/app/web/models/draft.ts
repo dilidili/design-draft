@@ -1,4 +1,4 @@
-import { addDraft } from '@/services/api';
+import { addDraft, deleteDraft } from '@/services/api';
 
 export interface Draft {
   draftName: string,
@@ -20,6 +20,17 @@ export default {
       yield put({
         type: 'project/addDraft',
         payload: res
+      });
+
+      return res;
+    },
+
+    *deleteDraft({ payload: { draftId } }, { call, put }) {
+      const res = yield call(deleteDraft, { draftId });
+
+      yield put({
+        type: 'project/removeDraft',
+        payload: draftId,
       });
 
       return res;

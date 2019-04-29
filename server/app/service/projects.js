@@ -6,6 +6,7 @@ class ProjectService extends Service {
 
     if (projectId) {
       const project = await model.Project.findById(projectId);
+      project.drafts = await model.Draft.find({ project: projectId });
       return project;
     } else {
       const projects = model.Project.find().sort('-updatedAt');

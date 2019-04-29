@@ -95,5 +95,15 @@ export default {
         },
       }
     },
+
+    removeDraft(state, action) {
+      return {
+        ...state,
+        current: {
+          ...state.current,
+          drafts: state.current.drafts.filter(draft => draft._id !== action.payload),
+        },
+      }
+    },
   },
 }

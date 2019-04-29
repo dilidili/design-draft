@@ -1,7 +1,12 @@
 'use strict';
 
-const { app, mock, assert } = require('egg-mock/bootstrap');
+const { app, assert } = require('egg-mock/bootstrap');
 const { createProject } = require('./project.test.js');
+
+const deleteDraft = ({ draftId }) => {
+  return app.httpRequest()
+  .delete(`/api/drafts/${draftId}`)
+}
 
 describe('test/app/controller/draft.test.js', () => {
   let projectId = null
@@ -15,6 +20,8 @@ describe('test/app/controller/draft.test.js', () => {
   })
 
   it('should create a list of drafts with pictures', function() {
+    let createdDrafts = []
+
     // create
     return app.httpRequest()
       .post('/api/drafts')
@@ -25,6 +32,11 @@ describe('test/app/controller/draft.test.js', () => {
       .expect(201)
       .then(response => {
         assert(response.body.filter(v => !!v).length > 0);
+
+        createdDrafts = response.body;
+
+        deleteDraft({ draftId: createdDrafts[0]._id })
+          .expect(204)
       });
   });
 });

@@ -31,6 +31,16 @@ class DraftController extends Controller {
     ctx.body = drafts;
     ctx.status = 201;
   }
+
+  async destroy() {
+    const ctx = this.ctx;
+
+    const draftId = ctx.params.id;
+    if (draftId) {
+      await ctx.service.drafts.delete(draftId);
+    }
+    ctx.status = 204;
+  }
 }
 
 module.exports = DraftController;

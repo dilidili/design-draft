@@ -34,3 +34,9 @@ export async function addDraft({ projectId, urls }) {
     }
   });
 }
+
+export async function deleteDraft({ draftId }) {
+  return request(`/api/drafts/${draftId}`, {
+    method: 'DELETE',
+  });
+}

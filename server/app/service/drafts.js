@@ -17,6 +17,12 @@ class DraftService extends Service {
 
     return project;
   }
+
+  async delete(draftId) {
+    const { model } = this.ctx;
+
+    return await model.Draft.deleteOne({ _id: draftId });
+  }
 }
 
 module.exports = DraftService;
