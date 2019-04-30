@@ -5,7 +5,13 @@ const { createProject } = require('./project.test.js');
 
 const deleteDraft = ({ draftId }) => {
   return app.httpRequest()
-  .delete(`/api/drafts/${draftId}`)
+    .delete(`/api/drafts/${draftId}`)
+}
+
+const updateDraft = (draftId, { draftName }) => {
+  return app.httpRequest()
+    .put(`/api/drafts/${draftId}`)
+    .send({ draftName })
 }
 
 describe('test/app/controller/draft.test.js', () => {
@@ -35,8 +41,18 @@ describe('test/app/controller/draft.test.js', () => {
 
         createdDrafts = response.body;
 
-        deleteDraft({ draftId: createdDrafts[0]._id })
-          .expect(204)
+        // update
+        return updateDraft(createdDrafts[0]._id, { draftName: 'NEW_DRAFT_NAME' })
+          .expect(200)
+          .then((response) => {
+            assert(response.body.draftName === 'NEW_DRAFT_NAME');
+            assert(!!response.body.updatedAt);
+
+            // delete
+            return deleteDraft({ draftId: createdDrafts[0]._id })
+              .expect(204)
+          })
+
       });
   });
 });

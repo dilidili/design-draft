@@ -105,5 +105,24 @@ export default {
         },
       }
     },
+
+    updateDraft(state, action: { payload: { draftId: string, content: Draft } }) {
+      return {
+        ...state,
+        current: {
+          ...state.current,
+          drafts: state.current.drafts.map(draft => {
+            if (draft._id === action.payload.draftId) {
+              return {
+                ...draft,
+                ...action.payload.content,
+              };
+            } else {
+              return draft;
+            }
+          }),
+        },
+      }
+    },
   },
 }

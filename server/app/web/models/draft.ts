@@ -1,4 +1,4 @@
-import { addDraft, deleteDraft } from '@/services/api';
+import { addDraft, deleteDraft, updateDraft } from '@/services/api';
 
 export interface Draft {
   draftName: string,
@@ -35,6 +35,23 @@ export default {
 
       return res;
     },
+
+    *changeDraftName({ payload: { draftId, draftName } }, { call, put }) {
+      if (!draftName) return;
+
+      const res = yield call(updateDraft, draftId, { draftName });
+
+      yield put({
+        type: 'project/updateDraft',
+        payload: {
+          draftId,
+          content: {
+            draftName,
+            updatedAt: res.updatedAt,
+          },
+        }
+      })
+    }
   },
 
   reducers: {

@@ -10,6 +10,10 @@ const createRule = {
   projectId: 'string',
 };
 
+const updateRule = {
+  draftName: 'string',
+};
+
 class DraftController extends Controller {
   async create() {
     const ctx = this.ctx;
@@ -30,6 +34,17 @@ class DraftController extends Controller {
 
     ctx.body = drafts;
     ctx.status = 201;
+  }
+
+  async update() {
+    const ctx = this.ctx;
+    const draftId = ctx.params.id;
+    ctx.validate(updateRule, ctx.request.body);
+
+    const draft = await ctx.service.drafts.update(draftId, ctx.request.body);
+
+    ctx.body = draft;
+    ctx.status = 200;
   }
 
   async destroy() {

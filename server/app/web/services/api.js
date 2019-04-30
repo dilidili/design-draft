@@ -40,3 +40,12 @@ export async function deleteDraft({ draftId }) {
     method: 'DELETE',
   });
 }
+
+export async function updateDraft(draftId, { draftName }) {
+  return request(`/api/drafts/${draftId}`, {
+    method: 'PUT',
+    data: {
+      draftName,
+    }
+  });
+}

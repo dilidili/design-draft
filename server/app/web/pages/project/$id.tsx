@@ -1,10 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'dva';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 import router from 'umi/router';
 import { Project } from 'models/project';
-import { Button, Modal, Form, List, Upload, Icon, Avatar, Popconfirm } from 'antd';
+import { Button, Modal, Form, List, Upload, Icon, Avatar, Popconfirm, Input } from 'antd';
 import dayjs from 'dayjs';
+
+const DraftNameInput = (props: { initialValue: string, draftId: string, dispatch: Function }) => {
+  const { initialValue, dispatch, draftId } = props;
+  const [isInputMode, setInputMode] = useState(false);
+
+  return isInputMode ? (
+    <Input
+      defaultValue={initialValue}
+      onClick={evt => evt.stopPropagation()}
+      onBlur={(evt) => {
+        evt.stopPropagation();
+
+        dispatch({
+          type: 'draft/changeDraftName',
+          payload: {
+            draftId,
+            draftName: evt.target.value,
+          },
+        });
+
+        setInputMode(false);
+      }}
+    />
+  ) : (
+    <div
+      onClick={(evt) => {
+        evt.stopPropagation();
+        setInputMode(true);
+      }}
+    >
+      {initialValue}
+    </div>
+  );
+}
 
 interface ProjectDetailProps {
   form: WrappedFormUtils,
@@ -105,7 +139,7 @@ class ProjectDetail extends React.Component<ProjectDetailProps> {
   }
 
   renderDraftList() {
-    const { projectDetail } = this.props;
+    const { projectDetail, dispatch } = this.props;
 
     return (
       <List
@@ -113,6 +147,7 @@ class ProjectDetail extends React.Component<ProjectDetailProps> {
         dataSource={projectDetail.drafts}
         renderItem={item => (
           <List.Item
+            onClick={() => router.push(`/draft/${item._id}`)}
             actions={[(
               <Popconfirm title="Are you sure？" icon={<Icon type="question-circle-o" style={{ color: 'red' }}/>} onConfirm={() => this.handleDeleteDraft(item._id)}>
                 <Button type="danger">Delete</Button>
@@ -120,7 +155,7 @@ class ProjectDetail extends React.Component<ProjectDetailProps> {
             )]}
           >
             <List.Item.Meta
-              title={<div style={{ cursor: 'pointer' }} onClick={() => router.push(`/draft/${item._id}`)}>{item.draftName}</div>}
+              title={<div style={{ cursor: 'pointer'}}><DraftNameInput initialValue={item.draftName} draftId={item._id} dispatch={dispatch} /></div>}
               avatar={<Avatar src={item.url} />}
               description={dayjs(item.updatedAt).format('YYYY-MM-DD hh:mm:ss')}
             />

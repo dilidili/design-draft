@@ -18,6 +18,12 @@ class DraftService extends Service {
     return project;
   }
 
+  async update(draftId, content) {
+    const { model } = this.ctx;
+
+    return await model.Draft.findOneAndUpdate({ _id: draftId }, content || {}, { new: true });
+  }
+
   async delete(draftId) {
     const { model } = this.ctx;
 
