@@ -12,6 +12,7 @@ const DraftNameInput = (props: { initialValue: string, draftId: string, dispatch
 
   return isInputMode ? (
     <Input
+      autoFocus
       defaultValue={initialValue}
       onClick={evt => evt.stopPropagation()}
       onBlur={(evt) => {
