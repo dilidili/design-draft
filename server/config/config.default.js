@@ -1,4 +1,5 @@
 'use strict';
+const path = require('path');
 
 module.exports = appInfo => {
   const config = exports = {};
@@ -43,6 +44,10 @@ module.exports = appInfo => {
   config.security = {
     csrf: false,
   };
+
+  config.paths = {
+    workspace: path.join(__dirname, '../.workspace'),
+  }
 
   return config;
 };

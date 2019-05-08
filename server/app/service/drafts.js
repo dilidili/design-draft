@@ -1,6 +1,15 @@
 const Service = require('egg').Service;
 
 class DraftService extends Service {
+  async query({ draftId } = {}) {
+    const { model } = this.ctx;
+
+    if (draftId) {
+      const draft = await model.Draft.findById(draftId);
+      return draft;
+    }
+  }
+
   async create(params) {
     const { model } = this.ctx;
     const {

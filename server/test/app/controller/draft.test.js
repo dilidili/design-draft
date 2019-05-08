@@ -14,6 +14,11 @@ const updateDraft = (draftId, { draftName }) => {
     .send({ draftName })
 }
 
+const fetchDraft = (draftId) => {
+  return app.httpRequest()
+    .get(`/api/drafts/${draftId}`)
+}
+
 describe('test/app/controller/draft.test.js', () => {
   let projectId = null
   
@@ -55,4 +60,32 @@ describe('test/app/controller/draft.test.js', () => {
 
       });
   });
+
+  it.only('should start a bunch of tasks when fetch draft detail', function() {
+    let createdDraft = null
+
+    // create
+    return app.httpRequest()
+      .post('/api/drafts')
+      .send({ urls: [
+        'https://design-draft.oss-cn-hangzhou.aliyuncs.com/060fe401-2d85-4a05-9ee5-387745c102a5.jpeg',
+      ], projectId: projectId })
+      .expect(201)
+      .then(response => {
+        assert(response.body.filter(v => !!v).length > 0);
+
+        createdDraft = response.body[0];
+
+        // detail
+        return fetchDraft(createdDraft._id)
+          .expect(200)
+          .then((response) => {
+            assert(response.body.draftName === 'Untitled');
+            assert(!!response.body.initilizeWork === true);
+
+            // initialization
+            return app.runSchedule('process_task');
+          })
+      });
+  })
 });

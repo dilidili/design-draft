@@ -15,6 +15,23 @@ const updateRule = {
 };
 
 class DraftController extends Controller {
+  async show() {
+    const ctx = this.ctx;
+    const draftId = ctx.params.id;
+
+    let draft = await ctx.service.drafts.query({ draftId });
+
+    if (draft) {
+      if (!draft.isInitialized()) {
+        await ctx.service.works.enqueueWorkFromDraft(draft);
+      }
+
+      await draft.populate('initilizeWork').execPopulate();
+      ctx.body = draft;
+    }
+    ctx.status = draft ? 200 : 204;
+  }
+
   async create() {
     const ctx = this.ctx;
     ctx.validate(createRule, ctx.request.body);
