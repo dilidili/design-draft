@@ -4,7 +4,7 @@ class ProcessTask extends Subscription {
   // using `schedule` property to set the scheduled task execution interval and other configurations
   static get schedule() {
     return {
-      interval: '100m', // 1 minute interval
+      interval: '3s',
       type: 'all',
     };
   }

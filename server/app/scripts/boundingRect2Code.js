@@ -4,11 +4,11 @@ const path = require('path');
 const cv = require("opencv4nodejs");
 const BackgroundColorDetector = require('./backgroundColorDetector');
 
-let boundingRect = require('../assets/boundingRect');
+let boundingRect = require(path.join(process.cwd(), './boundingRect.json'));
 // find root parent.
-boundingRect = boundingRect.children.find(v => v.children && v.children.length > 0);
+boundingRect = boundingRect.children.find(v => v.children && v.children.length > 0) || boundingRect.children[0];
 
-const srcImage = cv.imread(path.join(process.cwd(), "./assets/case0.png"));
+const srcImage = cv.imread(path.join(process.cwd(), "./original.jpeg"));
 let cropIndex = 0;
 
 function getCenterPoint(element) {
@@ -228,7 +228,12 @@ function wrapWithStyle(element, depth = 1, maxDepth) {
   const cropId = `crop_image_${cropIndex++}.jpeg`;
   const backgroundColor = new BackgroundColorDetector(cropImage).detect();
   element.style.background = `rgb(${backgroundColor[2]}, ${backgroundColor[1]}, ${backgroundColor[0]})`;
-  cv.imwrite(path.join(__dirname, `../similar_components_TL/input/${cropId}`), cropImage);
+
+  const regionDir = path.join(process.cwd(), 'region');
+  if (!fs.existsSync(regionDir)) {
+    fs.mkdirSync(regionDir);
+  }
+  cv.imwrite(path.join(regionDir, cropId), cropImage);
 }
 
 function element2Code(element, indent) {
@@ -257,4 +262,4 @@ const renderCode = element2Code(boundingRect, 4);
 const pageContent = Mustache.render(pageTpl, {
   code: renderCode.slice(0, -1),
 });
-fs.writeFileSync(path.join(__dirname, '../playground/pages/test.js'), pageContent, 'utf-8');
+fs.writeFileSync(path.join(process.cwd(), 'output.js'), pageContent, 'utf-8');

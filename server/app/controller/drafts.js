@@ -26,7 +26,7 @@ class DraftController extends Controller {
         await ctx.service.works.enqueueWorkFromDraft(draft);
       }
 
-      await draft.populate('initilizeWork').execPopulate();
+      await draft.populate('initializeWork').execPopulate();
       ctx.body = draft;
     }
     ctx.status = draft ? 200 : 204;

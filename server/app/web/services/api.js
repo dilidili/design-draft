@@ -25,6 +25,12 @@ export async function queryProjectDetail({ projectId }) {
   });
 }
 
+export async function queryDraftDetail({ draftId }) {
+  return request(`/api/drafts/${draftId}`, {
+    method: 'GET',
+  });
+}
+
 export async function addDraft({ projectId, urls }) {
   return request('/api/drafts', {
     method: 'POST',

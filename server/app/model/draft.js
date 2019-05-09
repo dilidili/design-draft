@@ -6,7 +6,7 @@ module.exports = app => {
     draftName: { type: String },
     url: { type: String },
 
-    initilizeWork: { type: Schema.Types.ObjectId, ref: 'Work' },
+    initializeWork: { type: Schema.Types.ObjectId, ref: 'Work' },
 
     project: { type: Schema.Types.ObjectId, ref: 'Project' },
   }, {
@@ -14,7 +14,7 @@ module.exports = app => {
   });
 
   DraftSchema.methods.isInitialized = function() {
-    return !!this.initilizeWork;
+    return !!this.initializeWork;
   };
 
   return mongoose.model('Draft', DraftSchema);

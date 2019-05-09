@@ -1,4 +1,4 @@
-import { addDraft, deleteDraft, updateDraft } from '@/services/api';
+import { addDraft, deleteDraft, updateDraft, queryDraftDetail } from '@/services/api';
 
 export interface Draft {
   draftName: string,
@@ -6,14 +6,30 @@ export interface Draft {
   updatedAt: string,
   _id: string,
   url: string,
+  initializeWork: {
+    currentStep: number,
+    currentStepDescription: string,
+    totalSteps: number,
+  },
 }
 
 export default {
   namespace: 'draft',
 
-  state: {},
+  state: {
+    current: null as Draft,
+  },
 
   effects: {
+    *enterDraft({ payload: { draftId } }, { call, put }) {
+      const res = yield call(queryDraftDetail, { draftId });
+
+      yield put({
+        type: 'updateDraftDetail',
+        payload: res,
+      })
+    },
+
     *createDraft({ payload: { urls, projectId } }, { call, put }) {
       const res = yield call(addDraft, { urls, projectId });
 
@@ -55,6 +71,11 @@ export default {
   },
 
   reducers: {
-
+    updateDraftDetail(state, action) {
+      return {
+        ...state,
+        current: action.payload,
+      };
+    }
   },
 }

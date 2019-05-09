@@ -81,7 +81,7 @@ describe('test/app/controller/draft.test.js', () => {
           .expect(200)
           .then((response) => {
             assert(response.body.draftName === 'Untitled');
-            assert(!!response.body.initilizeWork === true);
+            assert(!!response.body.initializeWork === true);
 
             // initialization
             return app.runSchedule('process_task');

@@ -150,9 +150,11 @@ class ProjectDetail extends React.Component<ProjectDetailProps> {
           <List.Item
             onClick={() => router.push(`/draft/${item._id}`)}
             actions={[(
-              <Popconfirm title="Are you sure？" icon={<Icon type="question-circle-o" style={{ color: 'red' }}/>} onConfirm={() => this.handleDeleteDraft(item._id)}>
-                <Button type="danger">Delete</Button>
-              </Popconfirm>
+              <div onClick={evt => evt.stopPropagation()}>
+                <Popconfirm title="Are you sure？" icon={<Icon type="question-circle-o" style={{ color: 'red' }}/>} onConfirm={() => this.handleDeleteDraft(item._id)}>
+                  <Button type="danger" >Delete</Button>
+                </Popconfirm>
+              </div>
             )]}
           >
             <List.Item.Meta

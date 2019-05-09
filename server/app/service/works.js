@@ -4,8 +4,11 @@ const path = require('path');
 const child_process = require('child_process');
 
 const DRAFT_INIT = [{
-  name: 'Extract bounding client rect',
+  name: 'EXTRACT_RECT',
   script: (draft) => `node ${path.join(__dirname, '../scripts/extractBoundingClientRect.js')} ${draft.url}`,
+}, {
+  name: 'GENERATE_CODE',
+  script: () => `node ${path.join(__dirname, '../scripts/boundingRect2Code.js')}`,
 }];
 
 class WorkService extends Service {
@@ -21,8 +24,14 @@ class WorkService extends Service {
 
     const work = await model.Work.findOne({ currentStep: 0 });
 
+    if (!work) return;
+
     if (work.type === 'DRAFT_INIT') {
       await work.populate('draft').execPopulate();
+
+      work.totalSteps = DRAFT_INIT.length;
+      await work.save();
+
       this.runScripts(DRAFT_INIT, work);
     }
   }
@@ -43,10 +52,20 @@ class WorkService extends Service {
     for (let index = 0; index < scripts.length; index++) {
       const script = scripts[index];
 
+      work.currentStep = index + 1;
+      work.currentStepDescription = script['name'];
+
       child_process.execSync(script.script(work.draft), {
         cwd: workspacePath,
       })
+
+      await work.save();
     }
+
+    // use -1 to indicate that the work has been completed
+    work.currentStep = -1;
+    work.currentStepDescription = '';
+    await work.save();
   }
 
   async enqueueWorkFromDraft(draft) {
@@ -57,7 +76,7 @@ class WorkService extends Service {
       draft: draft._id,
     });
 
-    draft.initilizeWork = work._id;
+    draft.initializeWork = work._id;
     draft.save();
   }
 }

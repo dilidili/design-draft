@@ -4,7 +4,15 @@ module.exports = app => {
 
   const WorkSchema = new Schema({
     type: { type: String },
-    currentStep: { type: Number, default: 0 },
+    currentStep: {
+      type: Number,
+      default: 0,
+    },
+    currentStepDescription: {
+      type: String,
+      default: '',
+    },
+    totalSteps: { type: Number, default: 0 },
     draft: { type: Schema.Types.ObjectId, ref: 'Draft' },
   }, {
     timestamps: true,
