@@ -5,4 +5,5 @@ export default {
       changeOrigin: true,
     },
   },
+  devtool: "cheap-eval-source-map",
 };

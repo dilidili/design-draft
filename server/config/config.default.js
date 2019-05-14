@@ -47,7 +47,16 @@ module.exports = appInfo => {
 
   config.paths = {
     workspace: path.join(__dirname, '../.workspace'),
-  }
+  };
+
+  config.io = {
+    namespace: {
+      '/': {
+        connectionMiddleware: [],
+        packetMiddleware: []
+      },
+    }
+  };
 
   return config;
 };
