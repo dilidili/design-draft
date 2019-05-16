@@ -9,7 +9,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./*"]
     },
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true
