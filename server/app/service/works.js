@@ -11,6 +11,10 @@ const DRAFT_INIT = [{
   script: () => `node ${path.join(__dirname, '../scripts/boundingRect2Code.js')}`,
 }];
 
+const WORK_PROCESS = {
+  INIT_WORKSPACE: 0,
+}
+
 class WorkService extends Service {
   // is there any work need to be processed
   async isActive() {
@@ -37,6 +41,7 @@ class WorkService extends Service {
   }
 
   async runScripts(scripts, work) {
+    // const { socket } = this.ctx;
     const config = this.app.config;
     const paths = config.paths;
     const workspacePath = path.join(paths.workspace, work._id + '');
@@ -46,6 +51,10 @@ class WorkService extends Service {
       fs.mkdirSync(paths.workspace);
     }
     if (!fs.existsSync(workspacePath)) {
+      // socket.emit('WORK_PROCESS_CHANGE', {
+      //   id: work._id,
+      //   state: WORK_PROCESS.INIT_WORKSPACE,
+      // });
       fs.mkdirSync(workspacePath);
     }
 

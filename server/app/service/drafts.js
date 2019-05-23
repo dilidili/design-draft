@@ -36,7 +36,10 @@ class DraftService extends Service {
   async delete(draftId) {
     const { model } = this.ctx;
 
-    return await model.Draft.deleteOne({ _id: draftId });
+    const draft = await model.Draft.findOneAndDelete({ _id: draftId });
+    if (draft.initializeWork) {
+      await model.Work.deleteOne({ _id: draft.initializeWork });
+    }
   }
 }
 
