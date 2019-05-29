@@ -107,6 +107,12 @@ class ProjectDetail extends React.Component<ProjectDetailProps> {
     })
   }
 
+  handleClostCreateDraftModal = () => {
+    this.setState({
+      showCreateDraftModal: false,
+    });
+  }
+
   renderCreateDraftModal() {
     const { showCreateDraftModal } = this.state;
     const {
@@ -119,6 +125,7 @@ class ProjectDetail extends React.Component<ProjectDetailProps> {
       <Modal
         visible={showCreateDraftModal}
         onOk={this.handleCreateDraft}
+        onCancel={this.handleClostCreateDraftModal}
         title="Create draft"
       >
         <Form>
@@ -127,7 +134,7 @@ class ProjectDetail extends React.Component<ProjectDetailProps> {
               valuePropName: 'file',
               getValueFromEvent: this.normFile,
             })(
-              <Upload name="draft" action="/api/oss/objects" listType="picture">
+              <Upload name="draft" action="/api/oss/objects" listType="picture" accept="image/png">
                 <Button>
                   <Icon type="upload" /> Click to upload
                 </Button>

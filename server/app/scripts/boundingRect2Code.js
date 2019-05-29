@@ -8,7 +8,7 @@ let boundingRect = require(path.join(process.cwd(), './boundingRect.json'));
 // find root parent.
 boundingRect = boundingRect.children.find(v => v.children && v.children.length > 0) || boundingRect.children[0];
 
-const srcImage = cv.imread(path.join(process.cwd(), "./original.jpeg"));
+const srcImage = cv.imread(path.join(process.cwd(), "./original.png"));
 let cropIndex = 0;
 
 function getCenterPoint(element) {
