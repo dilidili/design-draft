@@ -9,6 +9,13 @@ const DRAFT_INIT = [{
 }, {
   name: 'GENERATE_CODE',
   script: () => `node ${path.join(__dirname, '../scripts/boundingRect2Code.js')}`,
+  commit: async (workspacePath, work) => {
+    const content = fs.readFileSync(path.join(workspacePath, 'output.js'), 'utf8');
+    if (content) {
+      work.draft.render = content;
+      await work.draft.save()
+    }
+  }
 }];
 
 const WORK_PROCESS = {
@@ -20,7 +27,8 @@ class WorkService extends Service {
   async isActive() {
     const { model } = this.ctx;
 
-    return !!await model.Work.findOne({ currentStep: { $lt: 0 } });
+    const activeWork = await model.Work.findOne({ currentStep: { $gt: 0 } })
+    return !!activeWork;
   }
 
   async beginWork() {
@@ -67,6 +75,10 @@ class WorkService extends Service {
       child_process.execSync(script.script(work.draft), {
         cwd: workspacePath,
       })
+
+      if (script.commit) {
+        await script.commit(workspacePath, work);
+      }
 
       await work.save();
     }

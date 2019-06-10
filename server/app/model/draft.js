@@ -5,6 +5,7 @@ module.exports = app => {
   const DraftSchema = new Schema({
     draftName: { type: String },
     url: { type: String },
+    render: { type: String }, // ReactJS Component
 
     initializeWork: { type: Schema.Types.ObjectId, ref: 'Work' },
 

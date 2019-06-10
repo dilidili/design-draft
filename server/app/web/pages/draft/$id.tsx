@@ -1,14 +1,9 @@
 import React, { useEffect } from 'react';
 import { connect } from 'dva';
-import draft, { Draft } from 'models/draft';
+import { Draft } from 'models/draft';
 
-interface DraftDetailProps {
-  match: any,
-  dispatch: any,
-  draftDetail: Draft,
-};
 
-const DraftLoading = (props: { draft: Draft }) => {
+const DraftLoading = () => {
   return (
     <div>
       Loading
@@ -16,6 +11,19 @@ const DraftLoading = (props: { draft: Draft }) => {
   )
 }
 
+interface DraftOriginalProps {
+  draft: Draft,
+};
+const DraftOriginal = (props: DraftOriginalProps) => {
+  const { draft } = props;
+  return <img src={draft.url} style={{ width: '40vw', }}/>
+}
+
+interface DraftDetailProps {
+  match: any,
+  dispatch: any,
+  draftDetail: Draft,
+};
 const DraftDetail = (props: DraftDetailProps) => {
   const {
     match: {
@@ -40,10 +48,12 @@ const DraftDetail = (props: DraftDetailProps) => {
   if (!draftDetail) return null;
 
   if (draftDetail.initializeWork.currentStep !== -1) {
-    return <DraftLoading draft={draftDetail} />
+    return <DraftLoading />
   }
 
-  return <div>TODO</div>;
+  return <div>
+    <DraftOriginal draft={draftDetail} />
+  </div>;
 }
 
 export default connect(({ draft }) => {
