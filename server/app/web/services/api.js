@@ -55,3 +55,12 @@ export async function updateDraft(draftId, { draftName }) {
     }
   });
 }
+
+export async function queryBabelCode({ code }) {
+  return request('/api/babel', {
+    method: 'POST',
+    data: {
+      code,
+    }
+  });
+}

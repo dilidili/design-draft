@@ -61,7 +61,7 @@ describe('test/app/controller/draft.test.js', () => {
       });
   });
 
-  it.only('should start a bunch of tasks when fetch draft detail', function() {
+  it('should start a bunch of tasks when fetch draft detail', function() {
     let createdDraft = null
 
     // create

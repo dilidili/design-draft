@@ -2,7 +2,15 @@ import React, { useEffect } from 'react';
 import { connect } from 'dva';
 import { Draft } from 'models/draft';
 
+// for REPL enviroment.
+declare global {
+  interface Window {
+    React
+  }
+}
+window.React = React;
 
+// loading view.
 const DraftLoading = () => {
   return (
     <div>
@@ -11,12 +19,30 @@ const DraftLoading = () => {
   )
 }
 
+// show original design.
 interface DraftOriginalProps {
   draft: Draft,
 };
 const DraftOriginal = (props: DraftOriginalProps) => {
   const { draft } = props;
   return <img src={draft.url} style={{ width: '40vw', }}/>
+}
+
+// preview view.
+interface DraftPreviewProps {
+  draft: Draft,
+}
+const DraftPreview = (props: DraftPreviewProps) => {
+  const { draft } = props;
+
+  let children = null;
+  if (draft.transformedCode) {
+    children = eval(draft.transformedCode);
+  }
+
+  return (
+    <div>{children}</div>
+  )
 }
 
 interface DraftDetailProps {
@@ -53,6 +79,7 @@ const DraftDetail = (props: DraftDetailProps) => {
 
   return <div>
     <DraftOriginal draft={draftDetail} />
+    <DraftPreview draft={draftDetail} />
   </div>;
 }
 

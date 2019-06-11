@@ -1,4 +1,4 @@
-import { addDraft, deleteDraft, updateDraft, queryDraftDetail } from '@/services/api';
+import { addDraft, deleteDraft, updateDraft, queryDraftDetail, queryBabelCode } from '@/services/api';
 
 export interface Draft {
   draftName: string,
@@ -11,6 +11,8 @@ export interface Draft {
     currentStepDescription: string,
     totalSteps: number,
   },
+  render: string,
+  transformedCode?: string,
 }
 
 export default {
@@ -23,6 +25,11 @@ export default {
   effects: {
     *enterDraft({ payload: { draftId } }, { call, put }) {
       const res = yield call(queryDraftDetail, { draftId });
+
+      if (res.render) {
+        const babelRes = yield call(queryBabelCode, { code: res.render });
+        res.transformedCode = babelRes.transformedCode;
+      }
 
       yield put({
         type: 'updateDraftDetail',

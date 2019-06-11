@@ -1,5 +1,5 @@
-export default function() {
+(function() {
   return (
-{{{ code }}}
-  );
-}
+    {{{ code }}}
+  )
+})();
