@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "mustache": "^3.0.1",
-    "opencv4nodejs": "^4.15.0",
+    "opencv4nodejs": "^5.1.0",
     "randomcolor": "^0.5.4",
     "tesseract.js": "^1.0.14"
   }
