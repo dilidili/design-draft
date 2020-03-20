@@ -3,6 +3,6 @@
     "mustache": "^3.0.1",
     "opencv4nodejs": "^4.15.0",
     "randomcolor": "^0.5.4",
-    "tesseract.js": "^1.0.14"
+    "tesseract.js": "^2.1.0"
   }
 }
